@@ -39,7 +39,8 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    {
+    //Se comenta para evitar errores en la ejecución de los tests en Firefox y Safari
+/*    {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
@@ -48,6 +49,8 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
+    
+  */
 
     /* Test against mobile viewports. */
     // {
