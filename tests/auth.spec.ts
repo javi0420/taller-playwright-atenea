@@ -1,0 +1,201 @@
+import {test, expect} from '@playwright/test';
+import { PaginaLogin } from '../pages/paginaLogin';
+
+let paginaLogin: PaginaLogin;
+
+/*
+Test 1.1: Login Exitoso y Redirección al Dashboard
+○ Descripción: Un usuario con credenciales válidas debe poder iniciar sesión y
+ser redirigido a la página principal o "Dashboard".
+○ Pasos a automatizar:
+1. Navegar a la página de login (/login).
+2. Ingresar el email de un usuario válido.
+3. Ingresar la contraseña correcta.
+4. Hacer clic en el botón "Iniciar Sesión".
+○ Aserciones / Vericaciones:
+■ Vericar que aparece un mensaje de éxito temporal, como "Inicio de
+sesión exitoso".
+■ Vericar que la URL del navegador cambia a /dashboard.
+■ Vericar que en la página del dashboard se muestra un elemento clave,
+como el título "Dashboard" o un saludo de bienvenida.
+*/
+test('TC 1.1: Login Exitoso y Redirección al Dashboard', async ({ page }) => {
+    paginaLogin = new PaginaLogin(page);
+
+    // Navegar a la página de login
+    await paginaLogin.visitarPaginaLogin();
+    // Verificar que el formulario de login esté visible
+    await paginaLogin.verificarFormularioLoginVisible();
+    // Completar el formulario de login
+    await paginaLogin.realizarLoginCorrecto('Francisco.Lindo219@example.com','Test1234.');
+    // Verificar que el mensaje de éxito esté visible
+    await expect(page.getByText(paginaLogin.mensajeLoginExitoso)).toBeVisible();
+    // Verificar que la URL cambió a /dashboard
+    await paginaLogin.esperarUrlDashboard(paginaLogin.urlDashboard);
+    // Verificar que la URL del navegador es la correcta
+    await paginaLogin.comprobarUrlDashboard(paginaLogin.urlDashboard);
+    // Verificar que el elemento del formulario del dashboard esté visible
+    await paginaLogin.esperarElementoDashboard();
+
+});
+
+/*
+Test 2.1: Intento de Login con Credenciales Inválidas
+○ Descripción: Si el usuario introduce una contraseña incorrecta o un email no
+registrado, el sistema debe mostrar un mensaje de error claro y no permitir el
+acceso.
+○ Pasos a automatizar:
+1. Navegar a /login.
+2. Ingresar un email válido pero una contraseña incorrecta (ej:
+wrongpassword).
+3. Hacer clic en "Iniciar Sesión".
+○ Aserciones / Vericaciones:
+■ Vericar que la URL no cambia y sigue siendo /login.
+■ Vericar que aparece un mensaje de error visible, como "Credenciales
+inválidas" o "Email o contraseña incorrectos".
+*/
+test('TC 2.1: Intento de Login con Credenciales Inválidas', async ({ page }) => {
+    paginaLogin = new PaginaLogin(page);
+
+    // Navegar a la página de login
+    await paginaLogin.visitarPaginaLogin();
+    // Verificar que el formulario de login esté visible
+    await paginaLogin.verificarFormularioLoginVisible();
+    // Completar el formulario de login
+    await paginaLogin.completarFormularioLogin('Francisco.Lindo219@example.com','Test1235.');
+    await paginaLogin.hacerClickBotonLogin();
+    // Verificar que el mensaje de error esté visible
+    await expect(page.getByText(paginaLogin.mensajeErrorCredencialesInvalidas)).toBeVisible();
+    // Verificar que la URL sigue siendo /login
+    await paginaLogin.comprobarUrlLogin();
+}); 
+/*
+Test 2.2: Intento de Login con Campos Vacíos 
+○ Descripción: El formulario debe validar que ambos campos son requeridos 
+antes de intentar enviar la información al servidor. 
+○ Pasos a automatizar: 
+1. Navegar a /login. 
+2. Hacer clic en el botón "Iniciar Sesión" sin rellenar ningún campo. 
+○ Aserciones / Verificaciones: 
+■ Verificar que aparecen mensajes de error junto a cada campo (ej: "El email 
+es requerido", "La contraseña es requerida"). 
+■ Verificar que la URL sigue siendo /login. 
+*/
+
+/* 
+Este caso de prueba tiene un poco de trampa ya que no se puede 
+recoger o yo no he visto forma de hacerlo de coger el texto que muestra de campo requerido solo puedo verificar que esos campos son requeridos. 
+*/
+test('TC 2.2: Intento de Login con Campos Vacíos', async ({ page }) => {
+    paginaLogin = new PaginaLogin(page);
+
+    // Navegar a la página de login
+    await paginaLogin.visitarPaginaLogin();
+    // Verificar que el formulario de login esté visible
+    await paginaLogin.verificarFormularioLoginVisible();
+    // Hacer clic en el botón de iniciar sesión sin completar los campos
+    await paginaLogin.hacerClickBotonLogin();
+    // Verificar que los campos de email y contraseña están vacíos
+    await expect(paginaLogin.emailInput).toBeEmpty();
+    await expect(paginaLogin.emailInput).toHaveJSProperty('validationMessage', 'Please fill out this field.');
+    await expect(paginaLogin.contrasenaInput).toBeEmpty();
+    await expect(paginaLogin.contrasenaInput).toHaveJSProperty('validationMessage', 'Please fill out this field.');
+
+    // Verificar que la URL sigue siendo /login
+    await paginaLogin.comprobarUrlLogin();
+});
+
+/*
+● Test 2.3: Intento de Login con Email sin Contraseña 
+○ Descripción: Probar la validación de un campo individual. 
+○ Pasos a automatizar: 
+1. Navegar a /login. 
+2. Ingresar un email válido. 
+3. Dejar el campo de contraseña vacío. 
+4. Hacer clic en "Iniciar Sesión". 
+○ Aserciones / Verificaciones: 
+■ Verificar que aparece un mensaje de error específico para el campo de la 
+contraseña. 
+*/
+test('TC 2.3: Intento de Login con Email sin Contraseña', async ({ page }) => {
+    paginaLogin = new PaginaLogin(page);
+
+    // Navegar a la página de login
+    await paginaLogin.visitarPaginaLogin();
+    // Verificar que el formulario de login esté visible
+    await paginaLogin.verificarFormularioLoginVisible();
+    // Completar el formulario de login con email válido y contraseña vacía
+    await paginaLogin.emailInput.fill('Francisco.Lindo219@example.com');
+    // Hacer clic en el botón de iniciar sesión
+    await paginaLogin.contrasenaInput.fill('');
+    await paginaLogin.hacerClickBotonLogin();
+    await expect(paginaLogin.contrasenaInput).toBeEmpty();
+    await expect(paginaLogin.contrasenaInput).toHaveJSProperty('validationMessage', 'Please fill out this field.');
+    await paginaLogin.comprobarUrlLogin();
+
+});
+
+/*
+● Test 2.4: Intento de Login con Formato de Email Incorrecto 
+○ Descripción: El campo de email debe tener una validación de formato en el 
+frontend. 
+○ Pasos a automatizar: 
+1. Navegar a /login. 
+2. Ingresar un texto que no sea un email (ej: testinvalido). 
+3. Ingresar cualquier contraseña. 
+4. Hacer clic en "Iniciar Sesión". 
+○ Aserciones / Verificaciones: 
+■ Verificar que aparece un mensaje de error indicando "Formato de email 
+inválido".
+*/
+test('TC 2.4: Intento de Login con Formato de Email Incorrecto', async ({ page }) => {
+    paginaLogin = new PaginaLogin(page);
+
+    // Navegar a la página de login
+    await paginaLogin.visitarPaginaLogin();
+    // Verificar que el formulario de login esté visible
+    await paginaLogin.verificarFormularioLoginVisible();
+    // Completar el formulario de login con un email inválido
+    await paginaLogin.emailInput.fill('testinvalido');
+    await paginaLogin.contrasenaInput.fill('Test1234.');
+    // Hacer clic en el botón de iniciar sesión
+    await paginaLogin.hacerClickBotonLogin();
+    const mensajeEmail  = await paginaLogin.emailInput.evaluate(el => (el as HTMLInputElement).validationMessage);
+    expect(mensajeEmail).toContain("Please include an '@' in the email address.");
+    // Verificar que la URL sigue siendo /login
+    await paginaLogin.comprobarUrlLogin();
+});
+
+/*
+● Test 3.1: Verificación del Enlace de Registro 
+○ Descripción: El usuario debe poder navegar desde la página de login a la de 
+registro. 
+○ Pasos a automatizar: 
+1. Navegar a /login. 
+2. Localizar y hacer clic en el enlace que dice "¿No tienes una cuenta? 
+Regístrate". 
+○ Aserciones / Verificaciones: 
+■ Verificar que la URL cambia a /signup (o la ruta que corresponda para el 
+registro). 
+*/
+test('TC 3.1: Vericación del Enlace de Registro', async ({ page }) => {
+
+});
+
+/*
+● Test 3.2: Cierre de Sesión y Protección de Rutas 
+○ Descripción: Un usuario que ha cerrado sesión no debe poder acceder a las 
+rutas protegidas, como el Dashboard. 
+○ Pasos a automatizar (Este test combina varias acciones): 
+1. Primero, realizar un login exitoso (puedes reutilizar la lógica del Test 
+1.1). 
+2. Ya en el /dashboard, localizar y hacer clic en el botón "Cerrar Sesión". 
+3. Aserción 1: Verificar que el usuario es redirigido a la página de /login. 
+4. Segundo, intentar acceder a la ruta protegida: Después del logout, 
+intentar navegar directamente a la URL /dashboard. 
+5. Aserción 2: Verificar que Playwright fue redirigido de vuelta a /login, 
+confirmando que la ruta está correctamente protegida. 
+*/
+test('TC 3.2: Cierre de Sesión y Protección de Rutas', async ({ page }) => {
+
+});
