@@ -61,4 +61,8 @@ export class PaginaRegistro {
     async verificarFormularioLoginVisible() {
         await expect(this.formularioLogin).toBeVisible();
     }
+
+    async comprobarUrlRegistro() {
+        await expect(this.page).toHaveURL('http://localhost:3000/signup');
+    }
 }
