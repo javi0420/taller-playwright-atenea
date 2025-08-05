@@ -219,6 +219,8 @@ confirmando que la ruta está correctamente protegida.
 test('TC 3.2: Cierre de Sesión y Protección de Rutas', async ({ page }) => {
     paginaLogin = new PaginaLogin(page);
     paginaMenuSuperior = new PaginaMenuSuperior(page);
+    paginaDashboard = new PaginaDashboard(page);
+    
     // Navegar a la página de login
     await paginaLogin.visitarPaginaLogin();
     // Verificar que el formulario de login esté visible

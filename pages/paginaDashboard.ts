@@ -2,7 +2,7 @@ import {Page, Locator, expect} from '@playwright/test';
 
 export class PaginaDashboard {
     readonly page: Page;
-    readonly formularioDashboard: Locator;
+    readonly elementoTituloDashboard: Locator;
     readonly elementoAgregarCuenta: Locator;
     readonly elementoEliminarCuenta: Locator;
     readonly elementoAgregarFondo: Locator;
@@ -18,7 +18,7 @@ export class PaginaDashboard {
 
      constructor(page: Page) {
         this.page = page;
-        this.formularioDashboard = page.getByTestId('titulo-dashboard');
+        this.elementoTituloDashboard = page.getByTestId('titulo-dashboard');
         this.elementoAgregarCuenta = page.getByTestId('tarjeta-agregar-cuenta')
         this.elementoEliminarCuenta = page.getByTestId('boton-eliminar-cuenta');
         this.elementoAgregarFondo = page.getByTestId('boton-agregar-fondo');
@@ -34,7 +34,7 @@ export class PaginaDashboard {
     }
 
     async esperarElementoDashboard(){
-        await expect(this.formularioDashboard).toBeVisible();
+        await expect(this.elementoTituloDashboard).toBeVisible();
     }
 
     async pulsarElementoAgregarCuenta() {
