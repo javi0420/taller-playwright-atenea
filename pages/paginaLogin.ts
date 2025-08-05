@@ -12,6 +12,7 @@ export class PaginaLogin {
     readonly urlDashboard: string;
     readonly formularioDashboard: Locator;
     readonly urlLogin:string;
+    readonly mensajeSesiónCerrada: string;
 
      constructor(page: Page) {
         this.page = page;
@@ -22,6 +23,7 @@ export class PaginaLogin {
         this.botonRegistrarse = page.getByTestId('link-registrarse-login');
         this.mensajeLoginExitoso = "Inicio de sesión exitoso";
         this.mensajeErrorCredencialesInvalidas = "Invalid credentials";
+        this.mensajeSesiónCerrada = "Sesión cerrada correctamente"; 
 
         this.urlDashboard='http://localhost:3000/dashboard';
         this.formularioDashboard = page.getByTestId('titulo-dashboard');
@@ -62,5 +64,9 @@ export class PaginaLogin {
 
     async comprobarUrlLogin() {
         await expect(this.page).toHaveURL('http://localhost:3000/login');
+    }
+
+    async hacerClickBotonRegistrarse() {
+        await this.botonRegistrarse.click();
     }
 }

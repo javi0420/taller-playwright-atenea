@@ -1,7 +1,11 @@
 import {test, expect} from '@playwright/test';
 import { PaginaLogin } from '../pages/paginaLogin';
+import { PaginaRegistro } from '../pages/paginaRegistro';
+import { PaginaMenuSuperior } from '../pages/paginaMenuSuperior';
 
 let paginaLogin: PaginaLogin;
+let paginaRegistro: PaginaRegistro;
+let paginaMenuSuperior: PaginaMenuSuperior;
 
 /*
 Test 1.1: Login Exitoso y Redirección al Dashboard
@@ -179,8 +183,21 @@ Regístrate".
 registro). 
 */
 test('TC 3.1: Vericación del Enlace de Registro', async ({ page }) => {
+    paginaLogin = new PaginaLogin(page);
+    paginaRegistro = new PaginaRegistro(page);
 
+    // Navegar a la página de login
+    await paginaLogin.visitarPaginaLogin();
+    // Verificar que el formulario de login esté visible
+    await paginaLogin.verificarFormularioLoginVisible();
+    // Hacer clic en el botón de registrarse
+    await paginaLogin.hacerClickBotonRegistrarse();
+    // Verificar que la URL cambió a /signup
+    await paginaRegistro.comprobarUrlRegistro();
+    // Verificar que el formulario de registro esté visible
+    await paginaRegistro.verificarFormularioRegistroVisible();
 });
+
 
 /*
 ● Test 3.2: Cierre de Sesión y Protección de Rutas 
@@ -197,5 +214,34 @@ intentar navegar directamente a la URL /dashboard.
 confirmando que la ruta está correctamente protegida. 
 */
 test('TC 3.2: Cierre de Sesión y Protección de Rutas', async ({ page }) => {
-
+    paginaLogin = new PaginaLogin(page);
+    paginaMenuSuperior = new PaginaMenuSuperior(page);
+    // Navegar a la página de login
+    await paginaLogin.visitarPaginaLogin();
+    // Verificar que el formulario de login esté visible
+    await paginaLogin.verificarFormularioLoginVisible();
+    // Completar el formulario de login
+    await paginaLogin.realizarLoginCorrecto('Francisco.Lindo219@example.com','Test1234.');
+    // Verificar que el mensaje de éxito esté visible
+    await expect(page.getByText(paginaLogin.mensajeLoginExitoso)).toBeVisible();
+    // Verificar que la URL cambió a /dashboard
+    await paginaLogin.esperarUrlDashboard(paginaLogin.urlDashboard);
+    // Verificar que la URL del navegador es la correcta
+    await paginaLogin.comprobarUrlDashboard(paginaLogin.urlDashboard);
+    // Verificar que el elemento del formulario del dashboard esté visible
+    await paginaLogin.esperarElementoDashboard();
+    // Hacer clic en el botón de cerrar sesión
+    await paginaMenuSuperior.hacerClickBotonCerrarSesion();
+    // Verificar que el mensaje de sesión cerrada esté visible
+    await expect(page.getByText(paginaLogin.mensajeSesiónCerrada)).toBeVisible();
+    // Verificar que la URL cambió a /login 
+    await paginaLogin.comprobarUrlLogin();
+    // Verificar que el formulario de login esté visible
+    await paginaLogin.verificarFormularioLoginVisible();
+    // Intentar acceder directamente a la URL /dashboard
+    await page.goto(paginaLogin.urlDashboard);
+    // Verificar que la URL cambió a /login
+    await paginaLogin.comprobarUrlLogin();
+    // Verificar que el formulario de login esté visible
+    await paginaLogin.verificarFormularioLoginVisible();
 });
