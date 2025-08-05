@@ -26,7 +26,7 @@ export class PaginaLogin {
         this.mensajeSesiónCerrada = "Sesión cerrada correctamente"; 
 
         this.urlDashboard='http://localhost:3000/dashboard';
-        this.formularioDashboard = page.getByTestId('titulo-dashboard');
+        
     }
 
     async visitarPaginaLogin() {
@@ -56,10 +56,6 @@ export class PaginaLogin {
 
      async comprobarUrlDashboard(urlDashboard: string) {
         await expect(this.page).toHaveURL('http://localhost:3000/dashboard');
-    }
-
-    async esperarElementoDashboard(){
-        await expect(this.formularioDashboard).toBeVisible();
     }
 
     async comprobarUrlLogin() {

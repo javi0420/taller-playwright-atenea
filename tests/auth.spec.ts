@@ -2,10 +2,12 @@ import {test, expect} from '@playwright/test';
 import { PaginaLogin } from '../pages/paginaLogin';
 import { PaginaRegistro } from '../pages/paginaRegistro';
 import { PaginaMenuSuperior } from '../pages/paginaMenuSuperior';
+import { PaginaDashboard } from '../pages/paginaDashboard';
 
 let paginaLogin: PaginaLogin;
 let paginaRegistro: PaginaRegistro;
 let paginaMenuSuperior: PaginaMenuSuperior;
+let paginaDashboard: PaginaDashboard;
 
 /*
 Test 1.1: Login Exitoso y Redirección al Dashboard
@@ -25,6 +27,7 @@ como el título "Dashboard" o un saludo de bienvenida.
 */
 test('TC 1.1: Login Exitoso y Redirección al Dashboard', async ({ page }) => {
     paginaLogin = new PaginaLogin(page);
+    paginaDashboard = new PaginaDashboard(page);
 
     // Navegar a la página de login
     await paginaLogin.visitarPaginaLogin();
@@ -39,7 +42,7 @@ test('TC 1.1: Login Exitoso y Redirección al Dashboard', async ({ page }) => {
     // Verificar que la URL del navegador es la correcta
     await paginaLogin.comprobarUrlDashboard(paginaLogin.urlDashboard);
     // Verificar que el elemento del formulario del dashboard esté visible
-    await paginaLogin.esperarElementoDashboard();
+    await paginaDashboard.esperarElementoDashboard();
 
 });
 
@@ -229,7 +232,7 @@ test('TC 3.2: Cierre de Sesión y Protección de Rutas', async ({ page }) => {
     // Verificar que la URL del navegador es la correcta
     await paginaLogin.comprobarUrlDashboard(paginaLogin.urlDashboard);
     // Verificar que el elemento del formulario del dashboard esté visible
-    await paginaLogin.esperarElementoDashboard();
+    await paginaDashboard.esperarElementoDashboard();
     // Hacer clic en el botón de cerrar sesión
     await paginaMenuSuperior.hacerClickBotonCerrarSesion();
     // Verificar que el mensaje de sesión cerrada esté visible
