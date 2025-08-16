@@ -7,15 +7,17 @@ let paginaLogin: PaginaLogin;
 let paginaMenuSuperior: PaginaMenuSuperior;
 let paginaDashboard: PaginaDashboard;
 
-test('TC 1.1: Agregar cuenta nueva', async ({ page }) => {
+// Configuración inicial antes de cada test
+test.beforeEach(async ({ page }) => {
     paginaLogin = new PaginaLogin(page);
     paginaMenuSuperior = new PaginaMenuSuperior(page);
     paginaDashboard = new PaginaDashboard(page);
-
-    // Navegar a la página de login
+    // Navegar a la página de login antes de cada test
     await paginaLogin.visitarPaginaLogin();
-    // Verificar que el formulario de login esté visible
     await paginaLogin.verificarFormularioLoginVisible();
+});
+
+test('TC 1.1: Agregar cuenta nueva', async ({ page }) => {
     // Completar el formulario de login
     await paginaLogin.realizarLoginCorrecto('Francisco.Lindo219@example.com', 'Test1234.');
     // Verificar que la URL cambia a la del dashboard
