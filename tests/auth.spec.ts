@@ -9,6 +9,16 @@ let paginaRegistro: PaginaRegistro;
 let paginaMenuSuperior: PaginaMenuSuperior;
 let paginaDashboard: PaginaDashboard;
 
+test.beforeEach(async ({ page }) => {
+    // Configurar el contexto de prueba antes de cada test
+    paginaLogin = new PaginaLogin(page);
+    paginaRegistro = new PaginaRegistro(page);
+    paginaMenuSuperior = new PaginaMenuSuperior(page);
+    paginaDashboard = new PaginaDashboard(page);
+    // Navegar a la página de login antes de cada test
+    await paginaLogin.visitarPaginaLogin();
+    await paginaLogin.verificarFormularioLoginVisible();
+});
 /*
 Test 1.1: Login Exitoso y Redirección al Dashboard
 ○ Descripción: Un usuario con credenciales válidas debe poder iniciar sesión y
@@ -26,13 +36,7 @@ sesión exitoso".
 como el título "Dashboard" o un saludo de bienvenida.
 */
 test('TC 1.1: Login Exitoso y Redirección al Dashboard', async ({ page }) => {
-    paginaLogin = new PaginaLogin(page);
-    paginaDashboard = new PaginaDashboard(page);
 
-    // Navegar a la página de login
-    await paginaLogin.visitarPaginaLogin();
-    // Verificar que el formulario de login esté visible
-    await paginaLogin.verificarFormularioLoginVisible();
     // Completar el formulario de login
     await paginaLogin.realizarLoginCorrecto('Francisco.Lindo219@example.com','Test1234.');
     // Verificar que el mensaje de éxito esté visible
@@ -64,10 +68,6 @@ inválidas" o "Email o contraseña incorrectos".
 test('TC 2.1: Intento de Login con Credenciales Inválidas', async ({ page }) => {
     paginaLogin = new PaginaLogin(page);
 
-    // Navegar a la página de login
-    await paginaLogin.visitarPaginaLogin();
-    // Verificar que el formulario de login esté visible
-    await paginaLogin.verificarFormularioLoginVisible();
     // Completar el formulario de login
     await paginaLogin.completarFormularioLogin('Francisco.Lindo219@example.com','Test1235.');
     await paginaLogin.hacerClickBotonLogin();
@@ -96,10 +96,6 @@ recoger o yo no he visto forma de hacerlo de coger el texto que muestra de campo
 test('TC 2.2: Intento de Login con Campos Vacíos', async ({ page }) => {
     paginaLogin = new PaginaLogin(page);
 
-    // Navegar a la página de login
-    await paginaLogin.visitarPaginaLogin();
-    // Verificar que el formulario de login esté visible
-    await paginaLogin.verificarFormularioLoginVisible();
     // Hacer clic en el botón de iniciar sesión sin completar los campos
     await paginaLogin.hacerClickBotonLogin();
     // Verificar que los campos de email y contraseña están vacíos
@@ -127,10 +123,6 @@ contraseña.
 test('TC 2.3: Intento de Login con Email sin Contraseña', async ({ page }) => {
     paginaLogin = new PaginaLogin(page);
 
-    // Navegar a la página de login
-    await paginaLogin.visitarPaginaLogin();
-    // Verificar que el formulario de login esté visible
-    await paginaLogin.verificarFormularioLoginVisible();
     // Completar el formulario de login con email válido y contraseña vacía
     await paginaLogin.emailInput.fill('Francisco.Lindo219@example.com');
     // Hacer clic en el botón de iniciar sesión
@@ -158,10 +150,6 @@ inválido".
 test('TC 2.4: Intento de Login con Formato de Email Incorrecto', async ({ page }) => {
     paginaLogin = new PaginaLogin(page);
 
-    // Navegar a la página de login
-    await paginaLogin.visitarPaginaLogin();
-    // Verificar que el formulario de login esté visible
-    await paginaLogin.verificarFormularioLoginVisible();
     // Completar el formulario de login con un email inválido
     await paginaLogin.emailInput.fill('testinvalido');
     await paginaLogin.contrasenaInput.fill('Test1234.');
@@ -186,13 +174,7 @@ Regístrate".
 registro). 
 */
 test('TC 3.1: Vericación del Enlace de Registro', async ({ page }) => {
-    paginaLogin = new PaginaLogin(page);
-    paginaRegistro = new PaginaRegistro(page);
 
-    // Navegar a la página de login
-    await paginaLogin.visitarPaginaLogin();
-    // Verificar que el formulario de login esté visible
-    await paginaLogin.verificarFormularioLoginVisible();
     // Hacer clic en el botón de registrarse
     await paginaLogin.hacerClickBotonRegistrarse();
     // Verificar que la URL cambió a /signup
@@ -217,14 +199,7 @@ intentar navegar directamente a la URL /dashboard.
 confirmando que la ruta está correctamente protegida. 
 */
 test('TC 3.2: Cierre de Sesión y Protección de Rutas', async ({ page }) => {
-    paginaLogin = new PaginaLogin(page);
-    paginaMenuSuperior = new PaginaMenuSuperior(page);
-    paginaDashboard = new PaginaDashboard(page);
     
-    // Navegar a la página de login
-    await paginaLogin.visitarPaginaLogin();
-    // Verificar que el formulario de login esté visible
-    await paginaLogin.verificarFormularioLoginVisible();
     // Completar el formulario de login
     await paginaLogin.realizarLoginCorrecto('Francisco.Lindo219@example.com','Test1234.');
     // Verificar que el mensaje de éxito esté visible
