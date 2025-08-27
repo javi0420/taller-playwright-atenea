@@ -1,0 +1,14 @@
+{
+    "usuarioValido": {
+        "nombre": "Francisco",
+        "apellido": "Lindo",
+        "email": "valido@valido.es",
+        "password": "Test1234."
+    },
+    "usuarioInvalido": {
+        "nombre": "Francisco",
+        "apellido": "Lindo",
+        "email": "invalido@invalido.es",
+        "password": "Test1234."
+    }
+}

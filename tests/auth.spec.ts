@@ -38,7 +38,7 @@ como el título "Dashboard" o un saludo de bienvenida.
 test('TC 1.1: Login Exitoso y Redirección al Dashboard', async ({ page }) => {
 
     // Completar el formulario de login
-    await paginaLogin.realizarLoginCorrecto('Francisco.Lindo219@example.com','Test1234.');
+    await paginaLogin.realizarLoginCorrecto('Francisco.Lindo838@example.com','Test1234.');
     // Verificar que el mensaje de éxito esté visible
     await expect(page.getByText(paginaLogin.mensajeLoginExitoso)).toBeVisible();
     // Verificar que la URL cambió a /dashboard
@@ -201,7 +201,7 @@ confirmando que la ruta está correctamente protegida.
 test('TC 3.2: Cierre de Sesión y Protección de Rutas', async ({ page }) => {
     
     // Completar el formulario de login
-    await paginaLogin.realizarLoginCorrecto('Francisco.Lindo219@example.com','Test1234.');
+    await paginaLogin.realizarLoginCorrecto('Francisco.Lindo838@example.com','Test1234.');
     // Verificar que el mensaje de éxito esté visible
     await expect(page.getByText(paginaLogin.mensajeLoginExitoso)).toBeVisible();
     // Verificar que la URL cambió a /dashboard
