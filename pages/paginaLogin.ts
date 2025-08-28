@@ -4,7 +4,7 @@ export class PaginaLogin {
     readonly page: Page;
     readonly formularioLogin: Locator;
     readonly emailInput: Locator;
-    readonly contrasenaInput: Locator;
+    readonly passwordInput : Locator;
     readonly botonIniciarSesion: Locator;
     readonly botonRegistrarse: Locator;
     readonly mensajeLoginExitoso: string;
@@ -17,8 +17,8 @@ export class PaginaLogin {
      constructor(page: Page) {
         this.page = page;
         this.formularioLogin = page.getByTestId('formulario-login');
-        this.emailInput = page.getByRole('textbox', { name: 'Correo electrónico' });
-        this.contrasenaInput = page.getByRole('textbox', { name: 'contraseña' });
+        this.emailInput = page.getByRole('textbox', { name: 'Correo electrónico' })
+        this.passwordInput  = page.getByRole('textbox', { name: 'Contraseña' })
         this.botonIniciarSesion = page.getByTestId('boton-login');
         this.botonRegistrarse = page.getByTestId('link-registrarse-login');
         this.mensajeLoginExitoso = "Inicio de sesión exitoso";
@@ -36,17 +36,20 @@ export class PaginaLogin {
         await expect(this.formularioLogin).toBeVisible();
     }
 
-    async completarFormularioLogin(email: string, contrasena: string) {
-        await this.emailInput.fill(email);
-        await this.contrasenaInput.fill(contrasena);
+    async completarFormularioLogin(usuario: {email: string, contraseña: string}) {
+        console.log(usuario);
+        await this.emailInput.fill(usuario.email);
+        console.log(usuario.email);
+        await this.passwordInput.fill(usuario.contraseña);
+        console.log(usuario.contraseña);
     }
 
     async hacerClickBotonLogin() {
         await this.botonIniciarSesion.click();
     }   
 
-    async realizarLoginCorrecto(email: string, contrasena: string){
-        await this.completarFormularioLogin(email, contrasena);
+    async realizarLoginCorrecto(usuario: any){
+        await this.completarFormularioLogin(usuario);
         await this.hacerClickBotonLogin();
     }
 
@@ -64,5 +67,12 @@ export class PaginaLogin {
 
     async hacerClickBotonRegistrarse() {
         await this.botonRegistrarse.click();
+    }
+
+    async completarYHacerClickBotonLogin(usuario: {email: string, contraseña: string}) {
+        console.log(usuario);
+        await this.completarFormularioLogin(usuario);
+        console.log(usuario);
+        await this.hacerClickBotonLogin();
     }
 }
