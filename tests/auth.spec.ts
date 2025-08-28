@@ -1,8 +1,10 @@
-import {test, expect} from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { PaginaLogin } from '../pages/paginaLogin';
+import TestData from '../data/testData.json';
 import { PaginaRegistro } from '../pages/paginaRegistro';
 import { PaginaMenuSuperior } from '../pages/paginaMenuSuperior';
 import { PaginaDashboard } from '../pages/paginaDashboard';
+import { BackendUtils } from '../utils/backendUtils';
 
 let paginaLogin: PaginaLogin;
 let paginaRegistro: PaginaRegistro;
@@ -38,7 +40,7 @@ como el título "Dashboard" o un saludo de bienvenida.
 test('TC 1.1: Login Exitoso y Redirección al Dashboard', async ({ page }) => {
 
     // Completar el formulario de login
-    await paginaLogin.realizarLoginCorrecto('Francisco.Lindo838@example.com','Test1234.');
+    await paginaLogin.realizarLoginCorrecto(TestData.usuarioValido);
     // Verificar que el mensaje de éxito esté visible
     await expect(page.getByText(paginaLogin.mensajeLoginExitoso)).toBeVisible();
     // Verificar que la URL cambió a /dashboard
@@ -69,13 +71,13 @@ test('TC 2.1: Intento de Login con Credenciales Inválidas', async ({ page }) =>
     paginaLogin = new PaginaLogin(page);
 
     // Completar el formulario de login
-    await paginaLogin.completarFormularioLogin('Francisco.Lindo219@example.com','Test1235.');
+    await paginaLogin.completarFormularioLogin(TestData.usuarioInvalido);
     await paginaLogin.hacerClickBotonLogin();
     // Verificar que el mensaje de error esté visible
     await expect(page.getByText(paginaLogin.mensajeErrorCredencialesInvalidas)).toBeVisible();
     // Verificar que la URL sigue siendo /login
     await paginaLogin.comprobarUrlLogin();
-}); 
+});
 /*
 Test 2.2: Intento de Login con Campos Vacíos 
 ○ Descripción: El formulario debe validar que ambos campos son requeridos 
@@ -101,8 +103,8 @@ test('TC 2.2: Intento de Login con Campos Vacíos', async ({ page }) => {
     // Verificar que los campos de email y contraseña están vacíos
     await expect(paginaLogin.emailInput).toBeEmpty();
     await expect(paginaLogin.emailInput).toHaveJSProperty('validationMessage', 'Please fill out this field.');
-    await expect(paginaLogin.contrasenaInput).toBeEmpty();
-    await expect(paginaLogin.contrasenaInput).toHaveJSProperty('validationMessage', 'Please fill out this field.');
+    await expect(paginaLogin.passwordInput).toBeEmpty();
+    await expect(paginaLogin.passwordInput).toHaveJSProperty('validationMessage', 'Please fill out this field.');
 
     // Verificar que la URL sigue siendo /login
     await paginaLogin.comprobarUrlLogin();
@@ -124,12 +126,12 @@ test('TC 2.3: Intento de Login con Email sin Contraseña', async ({ page }) => {
     paginaLogin = new PaginaLogin(page);
 
     // Completar el formulario de login con email válido y contraseña vacía
-    await paginaLogin.emailInput.fill('Francisco.Lindo219@example.com');
+    await paginaLogin.emailInput.fill(TestData.usuarioValido.email);
     // Hacer clic en el botón de iniciar sesión
-    await paginaLogin.contrasenaInput.fill('');
+    await paginaLogin.passwordInput.fill('');
     await paginaLogin.hacerClickBotonLogin();
-    await expect(paginaLogin.contrasenaInput).toBeEmpty();
-    await expect(paginaLogin.contrasenaInput).toHaveJSProperty('validationMessage', 'Please fill out this field.');
+    await expect(paginaLogin.passwordInput).toBeEmpty();
+    await expect(paginaLogin.passwordInput).toHaveJSProperty('validationMessage', 'Please fill out this field.');
     await paginaLogin.comprobarUrlLogin();
 
 });
@@ -151,11 +153,11 @@ test('TC 2.4: Intento de Login con Formato de Email Incorrecto', async ({ page }
     paginaLogin = new PaginaLogin(page);
 
     // Completar el formulario de login con un email inválido
-    await paginaLogin.emailInput.fill('testinvalido');
-    await paginaLogin.contrasenaInput.fill('Test1234.');
+    await paginaLogin.emailInput.fill(TestData.usuarioFormatoEmailInvalido.email);
+    await paginaLogin.passwordInput.fill(TestData.usuarioFormatoEmailInvalido.contraseña);
     // Hacer clic en el botón de iniciar sesión
     await paginaLogin.hacerClickBotonLogin();
-    const mensajeEmail  = await paginaLogin.emailInput.evaluate(el => (el as HTMLInputElement).validationMessage);
+    const mensajeEmail = await paginaLogin.emailInput.evaluate(el => (el as HTMLInputElement).validationMessage);
     expect(mensajeEmail).toContain("Please include an '@' in the email address.");
     // Verificar que la URL sigue siendo /login
     await paginaLogin.comprobarUrlLogin();
@@ -199,9 +201,9 @@ intentar navegar directamente a la URL /dashboard.
 confirmando que la ruta está correctamente protegida. 
 */
 test('TC 3.2: Cierre de Sesión y Protección de Rutas', async ({ page }) => {
-    
+
     // Completar el formulario de login
-    await paginaLogin.realizarLoginCorrecto('Francisco.Lindo838@example.com','Test1234.');
+    await paginaLogin.realizarLoginCorrecto(TestData.usuarioValido);
     // Verificar que el mensaje de éxito esté visible
     await expect(page.getByText(paginaLogin.mensajeLoginExitoso)).toBeVisible();
     // Verificar que la URL cambió a /dashboard
@@ -224,4 +226,30 @@ test('TC 3.2: Cierre de Sesión y Protección de Rutas', async ({ page }) => {
     await paginaLogin.comprobarUrlLogin();
     // Verificar que el formulario de login esté visible
     await paginaLogin.verificarFormularioLoginVisible();
+});
+
+test('TC 4.1: verificar que podemos loguear un usuario creado con la API', async ({ page, request }) => {
+    const nuevoUsuario = await BackendUtils.crearUsuarioPorAPI(request, TestData.usuarioValido);
+
+    const responsePromiseLogin = page.waitForResponse('http://localhost:6007/api/auth/login');
+    await paginaLogin.completarYHacerClickBotonLogin(nuevoUsuario);
+
+    const responseLogin = await responsePromiseLogin;
+    const responseBodyLoginJson = await responseLogin.json();
+
+    expect(responseLogin.status()).toBe(200);
+    expect(responseBodyLoginJson).toHaveProperty('token');
+    expect(typeof responseBodyLoginJson.token).toBe('string');
+    expect(responseBodyLoginJson).toHaveProperty('user');
+    expect(responseBodyLoginJson.user).toEqual(expect.objectContaining({
+        id: expect.any(String),
+        firstName: TestData.usuarioValido.nombre,
+        lastName: TestData.usuarioValido.apellido,
+        email: nuevoUsuario.email,
+    }));
+
+
+    await expect(page.getByText(paginaLogin.mensajeLoginExitoso)).toBeVisible();
+    await paginaDashboard.esperarElementoDashboard();
+
 });

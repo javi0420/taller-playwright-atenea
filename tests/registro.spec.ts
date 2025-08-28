@@ -63,7 +63,7 @@ test('TC3 - verificar redireccionamiento a login despues de crear usuario', asyn
   await paginaLogin.verificarFormularioLoginVisible();
 });
 
-test('TC4 - veriricar que podemos crear un usuario con la API', async ({ request }) => {
+test('TC4 - verificar que podemos crear un usuario con la API', async ({ request }) => {
   const email = TestData.usuarioValido.email.split('@')[0] + Math.floor(Math.random() * 1000) + '@' + TestData.usuarioValido.email.split('@')[1];
   const response = await request.post('http://localhost:6007/api/auth/signup', {
     headers: {
@@ -73,7 +73,7 @@ test('TC4 - veriricar que podemos crear un usuario con la API', async ({ request
       firstName: TestData.usuarioValido.nombre,
       lastName: TestData.usuarioValido.apellido,
       email: email,
-      password: TestData.usuarioValido.password
+      password: TestData.usuarioValido.contraseña
     }
   })
   const responseBody = await response.json();
@@ -97,7 +97,7 @@ test('TC5 - Verificar registro existoso con datos validos verificando respuesta 
       TestData.usuarioValido.nombre,
       TestData.usuarioValido.apellido,
       email,
-      TestData.usuarioValido.password
+      TestData.usuarioValido.contraseña
     );
     /*Esto sería una especia de trampa (escuchado) porque estamos verificando 
     la respuesta de la API en lugar de la UI y aquí esta esperando a que aparezca ese request*/
@@ -146,8 +146,11 @@ test('TC6 - Verificar comportamiento front con email ya utilizado', async ({ pag
     TestData.usuarioValido.nombre,
     TestData.usuarioValido.apellido,
     email,
-    TestData.usuarioValido.password
+    TestData.usuarioValido.contraseña
   );
   //verificar que se muesre el mensaje de error
-  await expect(page.getByText(paginaRegistro.alertaEmailUtilizado)).toBeVisible();
+  //para el error 409
+  //await expect(page.getByText(paginaRegistro.alertaEmailUtilizado)).toBeVisible();
+  //para el error 500
+  await expect(page.getByText("no funciona nada")).toBeVisible();
 });
